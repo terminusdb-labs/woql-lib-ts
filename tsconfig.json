@@ -1,11 +1,12 @@
 {
-    "extends": "@tsconfig/node18/tsconfig.json",
-    "baseUrl": "./",
-    "include": [
-        "src/**/*.ts"
-    ],
-    "compilerOptions": {
-        "outDir": "dist",
-        "sourceMap": true
-    }
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "baseUrl": "./",
+  "include": [
+    "src/**/*.ts"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    "sourceMap": true
+    "module" : "node16"
+  }
 }
