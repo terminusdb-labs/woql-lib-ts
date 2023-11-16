@@ -6,7 +6,7 @@
   ],
   "compilerOptions": {
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
     "module" : "node16"
   }
 }

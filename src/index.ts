@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import * as W from './woql_defs/woql.ts'
+import * as W from './woql_defs/woql.js'
 
 function v(name: string) : Var {
   return { name: name }
