@@ -32,14 +32,14 @@ export function optionType(s:string) : string | null {
   }
 }
 
-function associated_type(ty: string) : string {
+function associatedType(ty: string) : string {
   let lt = listType(ty)
   let ot = optionType(ty)
   if(lt){
-    let t = associated_type(lt)
+    let t = associatedType(lt)
     return `${t}[]`
   }else if(ot){
-    let t = associated_type(ot)
+    let t = associatedType(ot)
     return `${t} | null`
   }else if (ty=='query') {
     return `Query`
@@ -70,6 +70,10 @@ function associated_type(ty: string) : string {
   }
 }
 
+function associatedTypes(types: string[]) : string[] {
+  return types.map( (ty) => { return associatedType(ty) })
+}
+
 function lowerCamelCase(inputString: string) : string {
   if (inputString.length > 1) {
     return inputString[0].toLowerCase() + inputString.slice(1,inputString.length)
@@ -92,19 +96,33 @@ function renameFields(fields: string[]) : string[] {
   return fields.map( (s) => { return renameField(s) })
 }
 
-function argsList(fields: string[], types: string[]) : string[] {
+function functionArgsList(fields: string[], types: string[]) : string[] {
   let args = []
   for (const i in fields) {
     let name = fields[i];
-    let typ = associated_type(types[i]);
-    args.push(`${name} : ${typ}`)
+    let typ = types[i];
+    if (/\| null/.exec(typ)){
+      args.push(`${name}: ${typ} = null`)
+    }else{
+      args.push(`${name}: ${typ}`)
+    }
+  }
+  return args
+}
+
+function objectArgsList(fields: string[], types: string[]) : string[] {
+  let args = []
+  for (const i in fields) {
+    let name = fields[i];
+    let typ = types[i];
+    args.push(`${name}: ${typ}`)
   }
   return args
 }
 
 function renderBody(fields: string[]) : string {
   let inner = fields.map( (s : string) : string => {
-    return `${s} : ${s}`
+    return `${s}: ${s}`
   } ).join(', ')
   return `{ ${inner} }`
 }
@@ -118,11 +136,12 @@ function generateDefs(jsonObject: any, cls: string, otherTypes: string[] = []) :
       let metadata = jsonObject[i]['@metadata']
       let definitionRecord = metadata['https://terminusdb.com']
       let fields = renameFields(definitionRecord['fields'])
-      let defTypes = definitionRecord['types']
+      let defTypes = associatedTypes(definitionRecord['types'])
       let funName = renameFunction(name)
-      let args = argsList(fields, defTypes)
-      let funArgs = args.join(', ')
-      let types = args.join('\n  ')
+      let funArgsList = functionArgsList(fields, defTypes)
+      let objArgsList = objectArgsList(fields, defTypes)
+      let funArgs = funArgsList.join(', ')
+      let types = objArgsList.join('\n  ')
       let body = renderBody(fields)
       let fundef = `
 type ${name} = {
