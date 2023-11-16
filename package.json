@@ -4,18 +4,20 @@
   "description": "A library for WOQL manipulation in TerminusDB",
   "type": "module",
   "scripts": {
-    "woqlget" : "wget \"https://raw.githubusercontent.com/terminusdb/terminusdb/main/src/terminus-schema/woql.json\" -O src/woql_defs/woql.json && cat src/woql_defs/woql.json | jq -s '.' > src/woql_defs/woql_list.json",
+    "woqlget": "wget \"https://raw.githubusercontent.com/terminusdb/terminusdb/main/src/terminus-schema/woql.json\" -O src/woql_defs/woql.json && cat src/woql_defs/woql.json | jq -s '.' > src/woql_defs/woql_list.json",
     "build": "tsc",
     "clean": "rm -rf ./dist",
     "dev": "tsc -w",
     "lint": "eslint . --ext ts"
   },
   "devDependencies": {
+    "@types/mustache": "^4.2.5",
     "@types/node": "^20.9.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "@tsconfig/node18": "^18.2.2",
+    "mustache": "^4.2.0",
     "tsconfig": "^7.0.0"
   }
 }

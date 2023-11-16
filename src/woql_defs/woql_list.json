@@ -9,7 +9,7 @@
       "@title": "WOQL schema"
     },
     "@metadata": {
-      "schema_version": "v1.0.0"
+      "schema_version": "v1.0.2"
     },
     "@schema": "http://terminusdb.com/schema/woql#",
     "@type": "@context",
@@ -423,7 +423,7 @@
           "subject",
           "predicate",
           "object",
-          "optional(graph)"
+          "graph"
         ],
         "mode": [
           "?",
@@ -435,7 +435,7 @@
           "node",
           "node",
           "value",
-          "graph"
+          "optional(graph)"
         ]
       }
     },
@@ -469,7 +469,7 @@
           "subject",
           "predicate",
           "object",
-          "optional(graph)"
+          "graph"
         ],
         "mode": [
           "+",
@@ -481,7 +481,7 @@
           "node",
           "node",
           "value",
-          "graph"
+          "optional(graph)"
         ]
       }
     },
@@ -515,7 +515,7 @@
           "subject",
           "predicate",
           "object",
-          "optional(graph)"
+          "graph"
         ],
         "mode": [
           "?",
@@ -527,7 +527,7 @@
           "node",
           "node",
           "value",
-          "graph"
+          "optional(graph)"
         ]
       }
     },
@@ -561,7 +561,7 @@
           "subject",
           "predicate",
           "object",
-          "optional(graph)"
+          "graph"
         ],
         "mode": [
           "+",
@@ -573,7 +573,7 @@
           "node",
           "node",
           "value",
-          "graph"
+          "optional(graph)"
         ]
       }
     },
@@ -607,7 +607,7 @@
           "subject",
           "predicate",
           "object",
-          "optional(graph)"
+          "graph"
         ],
         "mode": [
           "?",
@@ -619,7 +619,7 @@
           "node",
           "node",
           "value",
-          "graph"
+          "optional(graph)"
         ]
       }
     },
@@ -844,7 +844,7 @@
       "https://terminusdb.com": {
         "fields": [
           "document",
-          "optional(identifier)"
+          "identifier"
         ],
         "mode": [
           "+",
@@ -852,7 +852,7 @@
         ],
         "types": [
           "node",
-          "json"
+          "optional(json)"
         ]
       }
     },
@@ -880,7 +880,7 @@
       "https://terminusdb.com": {
         "fields": [
           "document",
-          "optional(identifier)"
+          "identifier"
         ],
         "mode": [
           "+",
@@ -888,7 +888,7 @@
         ],
         "types": [
           "node",
-          "json"
+          "optional(json)"
         ]
       }
     },
@@ -996,7 +996,7 @@
         "fields": [
           "columns",
           "resource",
-          "optional(has_header)"
+          "has_header"
         ],
         "mode": [
           [
@@ -1007,7 +1007,8 @@
         ],
         "types": [
           "list(column)",
-          "resource"
+          "resource",
+          "optional(boolean)"
         ]
       }
     },
@@ -1294,6 +1295,22 @@
     "@key": {
       "@type": "ValueHash"
     },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "left",
+          "right"
+        ],
+        "mode": [
+          "+",
+          "+"
+        ],
+        "types": [
+          "arithmetic",
+          "arithmetic"
+        ]
+      }
+    },
     "@type": "Class",
     "left": "ArithmeticExpression",
     "right": "ArithmeticExpression"
@@ -1310,6 +1327,22 @@
     "@inherits": "ArithmeticExpression",
     "@key": {
       "@type": "ValueHash"
+    },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "left",
+          "right"
+        ],
+        "mode": [
+          "+",
+          "+"
+        ],
+        "types": [
+          "arithmetic",
+          "arithmetic"
+        ]
+      }
     },
     "@type": "Class",
     "left": "ArithmeticExpression",
@@ -1328,6 +1361,22 @@
     "@key": {
       "@type": "ValueHash"
     },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "left",
+          "right"
+        ],
+        "mode": [
+          "+",
+          "+"
+        ],
+        "types": [
+          "arithmetic",
+          "arithmetic"
+        ]
+      }
+    },
     "@type": "Class",
     "left": "ArithmeticExpression",
     "right": "ArithmeticExpression"
@@ -1344,6 +1393,22 @@
     "@inherits": "ArithmeticExpression",
     "@key": {
       "@type": "ValueHash"
+    },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "left",
+          "right"
+        ],
+        "mode": [
+          "+",
+          "+"
+        ],
+        "types": [
+          "arithmetic",
+          "arithmetic"
+        ]
+      }
     },
     "@type": "Class",
     "left": "ArithmeticExpression",
@@ -1362,6 +1427,22 @@
     "@key": {
       "@type": "ValueHash"
     },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "left",
+          "right"
+        ],
+        "mode": [
+          "+",
+          "+"
+        ],
+        "types": [
+          "arithmetic",
+          "arithmetic"
+        ]
+      }
+    },
     "@type": "Class",
     "left": "ArithmeticExpression",
     "right": "ArithmeticExpression"
@@ -1379,6 +1460,22 @@
     "@key": {
       "@type": "ValueHash"
     },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "left",
+          "right"
+        ],
+        "mode": [
+          "+",
+          "+"
+        ],
+        "types": [
+          "arithmetic",
+          "arithmetic"
+        ]
+      }
+    },
     "@type": "Class",
     "left": "ArithmeticExpression",
     "right": "ArithmeticExpression"
@@ -1394,6 +1491,20 @@
     "@inherits": "ArithmeticExpression",
     "@key": {
       "@type": "ValueHash"
+    },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "argument"
+        ],
+        "mode": [
+          "+",
+          "+"
+        ],
+        "types": [
+          "arithmetic"
+        ]
+      }
     },
     "@type": "Class",
     "argument": "ArithmeticExpression"
@@ -2360,7 +2471,7 @@
           "subject",
           "pattern",
           "object",
-          "optional(path)"
+          "path"
         ],
         "mode": [
           "?",
@@ -2372,7 +2483,7 @@
           "node",
           "pattern",
           "node",
-          "json"
+          "optional(path)"
         ]
       }
     },
@@ -2397,6 +2508,19 @@
     "@key": {
       "@type": "ValueHash"
     },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "predicate"
+        ],
+        "mode": [
+          "+"
+        ],
+        "types": [
+          "optional(string)"
+        ]
+      }
+    },
     "@type": "Class",
     "predicate": {
       "@class": "xsd:string",
@@ -2414,6 +2538,19 @@
     "@inherits": "PathPattern",
     "@key": {
       "@type": "ValueHash"
+    },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "predicate"
+        ],
+        "mode": [
+          "+"
+        ],
+        "types": [
+          "optional(string)"
+        ]
+      }
     },
     "@type": "Class",
     "predicate": {
@@ -2433,6 +2570,19 @@
     "@key": {
       "@type": "ValueHash"
     },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "sequence"
+        ],
+        "mode": [
+          "+"
+        ],
+        "types": [
+          "list(path)"
+        ]
+      }
+    },
     "@type": "Class",
     "sequence": {
       "@class": "PathPattern",
@@ -2450,6 +2600,19 @@
     "@inherits": "PathPattern",
     "@key": {
       "@type": "ValueHash"
+    },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "or"
+        ],
+        "mode": [
+          "+"
+        ],
+        "types": [
+          "list(path)"
+        ]
+      }
     },
     "@type": "Class",
     "or": {
@@ -2469,6 +2632,19 @@
     "@key": {
       "@type": "ValueHash"
     },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "plus"
+        ],
+        "mode": [
+          "+"
+        ],
+        "types": [
+          "path"
+        ]
+      }
+    },
     "@type": "Class",
     "plus": "PathPattern"
   },
@@ -2483,6 +2659,19 @@
     "@inherits": "PathPattern",
     "@key": {
       "@type": "ValueHash"
+    },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "star"
+        ],
+        "mode": [
+          "+"
+        ],
+        "types": [
+          "path"
+        ]
+      }
     },
     "@type": "Class",
     "star": "PathPattern"
@@ -2500,6 +2689,25 @@
     "@inherits": "PathPattern",
     "@key": {
       "@type": "ValueHash"
+    },
+    "@metadata": {
+      "https://terminusdb.com": {
+        "fields": [
+          "times",
+          "from",
+          "to"
+        ],
+        "mode": [
+          "+",
+          "+",
+          "+"
+        ],
+        "types": [
+          "path",
+          "integer",
+          "integer"
+        ]
+      }
     },
     "@type": "Class",
     "from": "xsd:nonNegativeInteger",
