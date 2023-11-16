@@ -3,6 +3,21 @@
   "version": "1.0.0",
   "description": "A library for WOQL manipulation in TerminusDB",
   "type": "module",
+  "licenses" :
+  {
+    "type": "MIT",
+    "url": "https://www.opensource.org/licenses/mit-license.php"
+  },
+  "author" : {
+    "name" : "Gavin Mendel-Gleason",
+    "email" : "gavin@terminusdb.com"
+  },
+  "contributors" : [
+    {
+      "name" : "Matthijs van Otterdijk",
+      "email" : "matthijs@terminusdb.com"
+    }
+  ],
   "scripts": {
     "woqlget": "wget \"https://raw.githubusercontent.com/terminusdb/terminusdb/main/src/terminus-schema/woql.json\" -O src/woql_defs/woql.json && cat src/woql_defs/woql.json | jq -s '.' > src/woql_defs/woql_list.json",
     "build": "tsc",
