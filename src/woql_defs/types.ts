@@ -1,22 +1,20 @@
-enum Graph {
+export enum Graph {
   instance = 'instance',
-  schema = 'schema'
+  schema = 'schema',
 }
 
-type Uri = {
+export interface Uri {
   uri: string
 }
 
-type Literal = {
+export interface Literal {
   type: string
   value: string | number | boolean
 }
 
-type Var = {
+export interface Var {
   name: string
 }
 
-type Value = Var | Uri | Literal
-type Node = Var | Uri
-
-export { Graph, Uri, Literal, Var, Value, Node }
+export type Value = Var | Uri | Literal
+export type Node = Var | Uri
