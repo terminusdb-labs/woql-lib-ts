@@ -7,6 +7,10 @@ function renameField(name: string) : string {
     return 'obj'
   }else if (name == 'type'){
     return 'ty'
+  }else if (name == 'from'){
+    return 'start'
+  }else if (name == 'string'){
+    return 'str'
   }else{
     return name
   }
@@ -50,7 +54,7 @@ function associated_type(ty: string) : string {
   }else if (ty=='boolean'){
     return 'boolean'
   }else if (ty=='json'){
-    return 'dictionary'
+    return 'any'
   }else if (ty=='resource'){
     return 'string'
   }else if (ty=='string'){
@@ -73,6 +77,17 @@ function lowerCamelCase(inputString: string) : string {
   return inputString.toLowerCase()
 }
 
+function renameFunction(inputString: string) : string {
+  let newName = lowerCamelCase(inputString)
+  if (newName == 'eval') {
+    return 'compute'
+  }else if(newName == 'true'){
+    return 'success'
+  }else{
+    return newName
+  }
+}
+
 function renameFields(fields: string[]) : string[] {
   return fields.map( (s) => { return renameField(s) })
 }
@@ -89,14 +104,14 @@ function argsList(fields: string[], types: string[]) : string[] {
 
 function renderBody(fields: string[]) : string {
   let inner = fields.map( (s : string) : string => {
-    return `${s} = ${s}`
+    return `${s} : ${s}`
   } ).join(', ')
   return `{ ${inner} }`
 }
 
-function generateDefs(jsonObject: any, cls: string, otherTypes: string = '') : string {
+function generateDefs(jsonObject: any, cls: string, otherTypes: string[] = []) : string {
   let defs = ''
-  let clsTypeList = []
+  let clsTypeList : string[] = []
   for (const i in jsonObject) {
     if (jsonObject[i]['@metadata'] && jsonObject[i]['@inherits'] == cls) {
       let name = jsonObject[i]['@id']
@@ -104,7 +119,7 @@ function generateDefs(jsonObject: any, cls: string, otherTypes: string = '') : s
       let definitionRecord = metadata['https://terminusdb.com']
       let fields = renameFields(definitionRecord['fields'])
       let defTypes = definitionRecord['types']
-      let funName = lowerCamelCase(name)
+      let funName = renameFunction(name)
       let args = argsList(fields, defTypes)
       let funArgs = args.join(', ')
       let types = args.join('\n  ')
@@ -123,10 +138,11 @@ export function ${funName}(${funArgs}) : ${cls} {
       clsTypeList.push(name)
     }
   }
+  clsTypeList = clsTypeList.concat(otherTypes)
   let queryType = `
 type ${cls} = ${clsTypeList.join(' | ')}
 `
-  defs += queryType + otherTypes
+  defs += queryType
   return defs
 }
 
@@ -145,7 +161,7 @@ import { Graph, Value, Node} from './types.ts'
   let pathDefs = generateDefs(jsonObject, 'PathPattern')
   defs += pathDefs
 
-  let arithmeticDefs = generateDefs(jsonObject, 'ArithmeticExpression')
+  let arithmeticDefs = generateDefs(jsonObject, 'ArithmeticExpression', ['number'])
   defs += arithmeticDefs
 
   await writeFile(dir + '/woql.ts', defs)
