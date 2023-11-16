@@ -40,7 +40,7 @@ function associatedType(ty: string) : string {
     return `${t}[]`
   }else if(ot){
     let t = associatedType(ot)
-    return `${t} | null`
+    return `${t} | undefined`
   }else if (ty=='query') {
     return `Query`
   }else if (ty=='graph'){
@@ -96,26 +96,17 @@ function renameFields(fields: string[]) : string[] {
   return fields.map( (s) => { return renameField(s) })
 }
 
-function functionArgsList(fields: string[], types: string[]) : string[] {
+function argsList(fields: string[], types: string[]) : string[] {
   let args = []
   for (const i in fields) {
     let name = fields[i];
     let typ = types[i];
-    if (/\| null/.exec(typ)){
-      args.push(`${name}: ${typ} = null`)
+    let res = typ.match(/(\S*)\s*\|\s*undefined/)
+    if (res != null){
+      args.push(`${name}?: ${res[1]}`)
     }else{
       args.push(`${name}: ${typ}`)
     }
-  }
-  return args
-}
-
-function objectArgsList(fields: string[], types: string[]) : string[] {
-  let args = []
-  for (const i in fields) {
-    let name = fields[i];
-    let typ = types[i];
-    args.push(`${name}: ${typ}`)
   }
   return args
 }
@@ -138,17 +129,16 @@ function generateDefs(jsonObject: any, cls: string, otherTypes: string[] = []) :
       let fields = renameFields(definitionRecord['fields'])
       let defTypes = associatedTypes(definitionRecord['types'])
       let funName = renameFunction(name)
-      let funArgsList = functionArgsList(fields, defTypes)
-      let objArgsList = objectArgsList(fields, defTypes)
-      let funArgs = funArgsList.join(', ')
-      let types = objArgsList.join('\n  ')
+      let args = argsList(fields, defTypes)
+      let funArgs = args.join(', ')
+      let types = args.join('\n  ')
       let body = renderBody(fields)
       let fundef = `
 type ${name} = {
   ${types}
 }
 
-export function ${funName}(${funArgs}) : ${cls} {
+export function ${funName}(${funArgs}) : ${name} {
   return ${body}
 }
 `
@@ -171,7 +161,7 @@ export async function generate_woql() {
   const jsonObject = JSON.parse(data)
 
   let defs = `
-import { Graph, Value, Node} from './types.ts'
+import { Graph, Value, Node} from './types.js'
 
 `
   let queryDefs = generateDefs(jsonObject, 'Query')
