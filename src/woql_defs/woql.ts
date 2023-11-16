@@ -3,67 +3,75 @@
 import { type Graph, type Value, type Node } from './types.js'
 
 export interface Using {
+  '@type': 'Using'
   collection: any
   query: Query
 }
 
 export function using(collection: any, query: Query): Using {
-  return { collection, query }
+  return { '@type': 'Using', collection, query }
 }
 
 export interface Select {
+  '@type': 'Select'
   variables: string[]
   query: Query
 }
 
 export function select(variables: string[], query: Query): Select {
-  return { variables, query }
+  return { '@type': 'Select', variables, query }
 }
 
 export interface Distinct {
+  '@type': 'Distinct'
   variables: string[]
   query: Query
 }
 
 export function distinct(variables: string[], query: Query): Distinct {
-  return { variables, query }
+  return { '@type': 'Distinct', variables, query }
 }
 
 export interface And {
+  '@type': 'And'
   and: Query[]
 }
 
 export function and(and: Query[]): And {
-  return { and }
+  return { '@type': 'And', and }
 }
 
 export interface Or {
+  '@type': 'Or'
   or: Query[]
 }
 
 export function or(or: Query[]): Or {
-  return { or }
+  return { '@type': 'Or', or }
 }
 
 export interface From {
+  '@type': 'From'
   graph: Graph
   query: Query
 }
 
 export function from(graph: Graph, query: Query): From {
-  return { graph, query }
+  return { '@type': 'From', graph, query }
 }
 
 export interface Into {
+  '@type': 'Into'
   graph: Graph
   query: Query
 }
 
 export function into(graph: Graph, query: Query): Into {
-  return { graph, query }
+  return { '@type': 'Into', graph, query }
 }
 
 export interface Triple {
+  '@type': 'Triple'
   subject: Node
   predicate: Node
   object: Value
@@ -76,10 +84,11 @@ export function triple(
   object: Value,
   graph?: Graph,
 ): Triple {
-  return { subject, predicate, object, graph }
+  return { '@type': 'Triple', subject, predicate, object, graph }
 }
 
 export interface AddTriple {
+  '@type': 'AddTriple'
   subject: Node
   predicate: Node
   object: Value
@@ -92,10 +101,11 @@ export function addTriple(
   object: Value,
   graph?: Graph,
 ): AddTriple {
-  return { subject, predicate, object, graph }
+  return { '@type': 'AddTriple', subject, predicate, object, graph }
 }
 
 export interface AddedTriple {
+  '@type': 'AddedTriple'
   subject: Node
   predicate: Node
   object: Value
@@ -108,10 +118,11 @@ export function addedTriple(
   object: Value,
   graph?: Graph,
 ): AddedTriple {
-  return { subject, predicate, object, graph }
+  return { '@type': 'AddedTriple', subject, predicate, object, graph }
 }
 
 export interface DeleteTriple {
+  '@type': 'DeleteTriple'
   subject: Node
   predicate: Node
   object: Value
@@ -124,10 +135,11 @@ export function deleteTriple(
   object: Value,
   graph?: Graph,
 ): DeleteTriple {
-  return { subject, predicate, object, graph }
+  return { '@type': 'DeleteTriple', subject, predicate, object, graph }
 }
 
 export interface DeletedTriple {
+  '@type': 'DeletedTriple'
   subject: Node
   predicate: Node
   object: Value
@@ -140,28 +152,31 @@ export function deletedTriple(
   object: Value,
   graph?: Graph,
 ): DeletedTriple {
-  return { subject, predicate, object, graph }
+  return { '@type': 'DeletedTriple', subject, predicate, object, graph }
 }
 
 export interface Subsumption {
+  '@type': 'Subsumption'
   child: Node
   parent: Node
 }
 
 export function subsumption(child: Node, parent: Node): Subsumption {
-  return { child, parent }
+  return { '@type': 'Subsumption', child, parent }
 }
 
 export interface Equals {
+  '@type': 'Equals'
   left: any
   right: any
 }
 
 export function equals(left: any, right: any): Equals {
-  return { left, right }
+  return { '@type': 'Equals', left, right }
 }
 
 export interface Substring {
+  '@type': 'Substring'
   string: string
   before: number
   length: number
@@ -176,19 +191,21 @@ export function substring(
   after: number,
   substring: string,
 ): Substring {
-  return { string, before, length, after, substring }
+  return { '@type': 'Substring', string, before, length, after, substring }
 }
 
 export interface ReadDocument {
+  '@type': 'ReadDocument'
   identifier: Node
   document: any
 }
 
 export function readDocument(identifier: Node, document: any): ReadDocument {
-  return { identifier, document }
+  return { '@type': 'ReadDocument', identifier, document }
 }
 
 export interface UpdateDocument {
+  '@type': 'UpdateDocument'
   document: Node
   identifier?: any
 }
@@ -197,10 +214,11 @@ export function updateDocument(
   document: Node,
   identifier?: any,
 ): UpdateDocument {
-  return { document, identifier }
+  return { '@type': 'UpdateDocument', document, identifier }
 }
 
 export interface InsertDocument {
+  '@type': 'InsertDocument'
   document: Node
   identifier?: any
 }
@@ -209,18 +227,20 @@ export function insertDocument(
   document: Node,
   identifier?: any,
 ): InsertDocument {
-  return { document, identifier }
+  return { '@type': 'InsertDocument', document, identifier }
 }
 
 export interface DeleteDocument {
+  '@type': 'DeleteDocument'
   identifier: Node
 }
 
 export function deleteDocument(identifier: Node): DeleteDocument {
-  return { identifier }
+  return { '@type': 'DeleteDocument', identifier }
 }
 
 export interface Get {
+  '@type': 'Get'
   columns: any[]
   resource: string
   has_header?: boolean
@@ -231,91 +251,101 @@ export function get(
   resource: string,
   has_header?: boolean,
 ): Get {
-  return { columns, resource, has_header }
+  return { '@type': 'Get', columns, resource, has_header }
 }
 
 export interface Trim {
+  '@type': 'Trim'
   untrimmed: string
   trimmed: string
 }
 
 export function trim(untrimmed: string, trimmed: string): Trim {
-  return { untrimmed, trimmed }
+  return { '@type': 'Trim', untrimmed, trimmed }
 }
 
 export interface Eval {
+  '@type': 'Eval'
   expression: ArithmeticExpression
   result: any
 }
 
 export function compute(expression: ArithmeticExpression, result: any): Eval {
-  return { expression, result }
+  return { '@type': 'Eval', expression, result }
 }
 
 export interface IsA {
+  '@type': 'IsA'
   element: Node
   type: Node
 }
 
 export function isA(element: Node, type: Node): IsA {
-  return { element, type }
+  return { '@type': 'IsA', element, type }
 }
 
 export interface Like {
+  '@type': 'Like'
   left: string
   right: string
   similarity: number
 }
 
 export function like(left: string, right: string, similarity: number): Like {
-  return { left, right, similarity }
+  return { '@type': 'Like', left, right, similarity }
 }
 
 export interface Less {
+  '@type': 'Less'
   left: any
   right: any
 }
 
 export function less(left: any, right: any): Less {
-  return { left, right }
+  return { '@type': 'Less', left, right }
 }
 
 export interface Greater {
+  '@type': 'Greater'
   left: any
   right: any
 }
 
 export function greater(left: any, right: any): Greater {
-  return { left, right }
+  return { '@type': 'Greater', left, right }
 }
 
 export interface Optional {
+  '@type': 'Optional'
   query: Query
 }
 
 export function optional(query: Query): Optional {
-  return { query }
+  return { '@type': 'Optional', query }
 }
 
 export interface Upper {
+  '@type': 'Upper'
   mixed: string
   upper: string
 }
 
 export function upper(mixed: string, upper: string): Upper {
-  return { mixed, upper }
+  return { '@type': 'Upper', mixed, upper }
 }
 
 export interface Lower {
+  '@type': 'Lower'
   mixed: string
   lower: string
 }
 
 export function lower(mixed: string, lower: string): Lower {
-  return { mixed, lower }
+  return { '@type': 'Lower', mixed, lower }
 }
 
 export interface Pad {
+  '@type': 'Pad'
   string: string
   char: string
   times: number
@@ -328,75 +358,83 @@ export function pad(
   times: number,
   result: string,
 ): Pad {
-  return { string, char, times, result }
+  return { '@type': 'Pad', string, char, times, result }
 }
 
 export interface Split {
+  '@type': 'Split'
   string: string
   pattern: string
   list: string[]
 }
 
 export function split(string: string, pattern: string, list: string[]): Split {
-  return { string, pattern, list }
+  return { '@type': 'Split', string, pattern, list }
 }
 
 export interface Member {
+  '@type': 'Member'
   member: any
   list: any[]
 }
 
 export function member(member: any, list: any[]): Member {
-  return { member, list }
+  return { '@type': 'Member', member, list }
 }
 
 export interface Concatenate {
+  '@type': 'Concatenate'
   list: string[]
   result: string
 }
 
 export function concatenate(list: string[], result: string): Concatenate {
-  return { list, result }
+  return { '@type': 'Concatenate', list, result }
 }
 
 export interface Join {
+  '@type': 'Join'
   list: any[]
   separator: string
   result: string
 }
 
 export function join(list: any[], separator: string, result: string): Join {
-  return { list, separator, result }
+  return { '@type': 'Join', list, separator, result }
 }
 
 export interface Sum {
+  '@type': 'Sum'
   list: any[]
   result: any
 }
 
 export function sum(list: any[], result: any): Sum {
-  return { list, result }
+  return { '@type': 'Sum', list, result }
 }
 
 export interface Start {
+  '@type': 'Start'
   start: number
   query: Query
 }
 
 export function start(start: number, query: Query): Start {
-  return { start, query }
+  return { '@type': 'Start', start, query }
 }
 
 export interface Limit {
+  '@type': 'Limit'
   limit: number
   query: Query
 }
 
 export function limit(limit: number, query: Query): Limit {
-  return { limit, query }
+  return { '@type': 'Limit', limit, query }
 }
 
 export interface Regexp {
+  '@type': 'Regexp'
   pattern: string
   string: string
   result: string[]
@@ -407,25 +445,29 @@ export function regexp(
   string: string,
   result: string[],
 ): Regexp {
-  return { pattern, string, result }
+  return { '@type': 'Regexp', pattern, string, result }
 }
 
-export interface True {}
+export interface True {
+  '@type': 'True'
+}
 
 export function success(): True {
-  return {}
+  return { '@type': 'True' }
 }
 
 export interface OrderBy {
+  '@type': 'OrderBy'
   ordering: any[]
   query: Query
 }
 
 export function orderBy(ordering: any[], query: Query): OrderBy {
-  return { ordering, query }
+  return { '@type': 'OrderBy', ordering, query }
 }
 
 export interface GroupBy {
+  '@type': 'GroupBy'
   template: Value
   group_by: any
   value: any
@@ -438,62 +480,69 @@ export function groupBy(
   value: any,
   query: Query,
 ): GroupBy {
-  return { template, group_by, value, query }
+  return { '@type': 'GroupBy', template, group_by, value, query }
 }
 
 export interface Length {
+  '@type': 'Length'
   list: any[]
   length: number
 }
 
 export function length(list: any[], length: number): Length {
-  return { list, length }
+  return { '@type': 'Length', list, length }
 }
 
 export interface Not {
+  '@type': 'Not'
   query: Query
 }
 
 export function not(query: Query): Not {
-  return { query }
+  return { '@type': 'Not', query }
 }
 
 export interface Once {
+  '@type': 'Once'
   query: Query
 }
 
 export function once(query: Query): Once {
-  return { query }
+  return { '@type': 'Once', query }
 }
 
 export interface Immediately {
+  '@type': 'Immediately'
   query: Query
 }
 
 export function immediately(query: Query): Immediately {
-  return { query }
+  return { '@type': 'Immediately', query }
 }
 
 export interface Count {
+  '@type': 'Count'
   query: Query
   count: any
 }
 
 export function count(query: Query, count: any): Count {
-  return { query, count }
+  return { '@type': 'Count', query, count }
 }
 
 export interface Typecast {
+  '@type': 'Typecast'
   value: Value
   type: Node
   result: Value
 }
 
 export function typecast(value: Value, type: Node, result: Value): Typecast {
-  return { value, type, result }
+  return { '@type': 'Typecast', value, type, result }
 }
 
 export interface Path {
+  '@type': 'Path'
   subject: Node
   pattern: any
   object: Node
@@ -506,26 +555,28 @@ export function path(
   object: Node,
   path?: PathPattern,
 ): Path {
-  return { subject, pattern, object, path }
+  return { '@type': 'Path', subject, pattern, object, path }
 }
 
 export interface Dot {
+  '@type': 'Dot'
   document: any
   field: string
   value: any
 }
 
 export function dot(document: any, field: string, value: any): Dot {
-  return { document, field, value }
+  return { '@type': 'Dot', document, field, value }
 }
 
 export interface TypeOf {
+  '@type': 'TypeOf'
   value: Value
   type: Node
 }
 
 export function typeOf(value: Value, type: Node): TypeOf {
-  return { value, type }
+  return { '@type': 'TypeOf', value, type }
 }
 
 export type Query =
@@ -581,54 +632,61 @@ export type Query =
   | TypeOf
 
 export interface PathPredicate {
+  '@type': 'PathPredicate'
   predicate?: string
 }
 
 export function pathPredicate(predicate?: string): PathPredicate {
-  return { predicate }
+  return { '@type': 'PathPredicate', predicate }
 }
 
 export interface InversePathPredicate {
+  '@type': 'InversePathPredicate'
   predicate?: string
 }
 
 export function inversePathPredicate(predicate?: string): InversePathPredicate {
-  return { predicate }
+  return { '@type': 'InversePathPredicate', predicate }
 }
 
 export interface PathSequence {
+  '@type': 'PathSequence'
   sequence: PathPattern[]
 }
 
 export function pathSequence(sequence: PathPattern[]): PathSequence {
-  return { sequence }
+  return { '@type': 'PathSequence', sequence }
 }
 
 export interface PathOr {
+  '@type': 'PathOr'
   or: PathPattern[]
 }
 
 export function pathOr(or: PathPattern[]): PathOr {
-  return { or }
+  return { '@type': 'PathOr', or }
 }
 
 export interface PathPlus {
+  '@type': 'PathPlus'
   plus: PathPattern
 }
 
 export function pathPlus(plus: PathPattern): PathPlus {
-  return { plus }
+  return { '@type': 'PathPlus', plus }
 }
 
 export interface PathStar {
+  '@type': 'PathStar'
   star: PathPattern
 }
 
 export function pathStar(star: PathPattern): PathStar {
-  return { star }
+  return { '@type': 'PathStar', star }
 }
 
 export interface PathTimes {
+  '@type': 'PathTimes'
   times: PathPattern
   from: number
   to: number
@@ -639,7 +697,7 @@ export function pathTimes(
   from: number,
   to: number,
 ): PathTimes {
-  return { times, from, to }
+  return { '@type': 'PathTimes', times, from, to }
 }
 
 export type PathPattern =
@@ -652,6 +710,7 @@ export type PathPattern =
   | PathTimes
 
 export interface Plus {
+  '@type': 'Plus'
   left: ArithmeticExpression
   right: ArithmeticExpression
 }
@@ -660,10 +719,11 @@ export function plus(
   left: ArithmeticExpression,
   right: ArithmeticExpression,
 ): Plus {
-  return { left, right }
+  return { '@type': 'Plus', left, right }
 }
 
 export interface Minus {
+  '@type': 'Minus'
   left: ArithmeticExpression
   right: ArithmeticExpression
 }
@@ -672,10 +732,11 @@ export function minus(
   left: ArithmeticExpression,
   right: ArithmeticExpression,
 ): Minus {
-  return { left, right }
+  return { '@type': 'Minus', left, right }
 }
 
 export interface Times {
+  '@type': 'Times'
   left: ArithmeticExpression
   right: ArithmeticExpression
 }
@@ -684,10 +745,11 @@ export function times(
   left: ArithmeticExpression,
   right: ArithmeticExpression,
 ): Times {
-  return { left, right }
+  return { '@type': 'Times', left, right }
 }
 
 export interface Divide {
+  '@type': 'Divide'
   left: ArithmeticExpression
   right: ArithmeticExpression
 }
@@ -696,10 +758,11 @@ export function divide(
   left: ArithmeticExpression,
   right: ArithmeticExpression,
 ): Divide {
-  return { left, right }
+  return { '@type': 'Divide', left, right }
 }
 
 export interface Div {
+  '@type': 'Div'
   left: ArithmeticExpression
   right: ArithmeticExpression
 }
@@ -708,10 +771,11 @@ export function div(
   left: ArithmeticExpression,
   right: ArithmeticExpression,
 ): Div {
-  return { left, right }
+  return { '@type': 'Div', left, right }
 }
 
 export interface Exp {
+  '@type': 'Exp'
   left: ArithmeticExpression
   right: ArithmeticExpression
 }
@@ -720,15 +784,16 @@ export function exp(
   left: ArithmeticExpression,
   right: ArithmeticExpression,
 ): Exp {
-  return { left, right }
+  return { '@type': 'Exp', left, right }
 }
 
 export interface Floor {
+  '@type': 'Floor'
   argument: ArithmeticExpression
 }
 
 export function floor(argument: ArithmeticExpression): Floor {
-  return { argument }
+  return { '@type': 'Floor', argument }
 }
 
 export type ArithmeticExpression =

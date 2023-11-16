@@ -98,13 +98,13 @@ function argsList(fields: string[], types: string[]): string[] {
   return args
 }
 
-function renderBody(fields: string[]): string {
+function renderBody(name: string, fields: string[]): string {
   let inner = fields
     .map((s: string): string => {
       return `${s}`
     })
     .join(', ')
-  return `{ ${inner} }`
+  return `{ '@type': '${name}', ${inner} }`
 }
 
 function generateDefs(
@@ -125,9 +125,10 @@ function generateDefs(
       let args = argsList(fields, defTypes)
       let funArgs = args.join(', ')
       let types = args.join('\n  ')
-      let body = renderBody(fields)
+      let body = renderBody(name, fields)
       let fundef = `
 export interface ${name} {
+'@type': '${name}'
   ${types}
 }
 

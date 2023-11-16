@@ -1,15 +1,10 @@
-import { type Var, type Uri } from './woql_defs/types.js'
+import { Vars } from './woql_defs/types.js'
 import * as W from './woql_defs/woql.js'
 
-function v(name: string): Var {
-  return { name }
-}
-const query = W.and([
-  W.triple(v('x'), v('y'), v('z')),
-  W.triple(v('z'), v('y'), v('w')),
-])
+const v = Vars('x', 'y', 'z')
+const query = W.and([W.triple(v.x, v.y, v.z), W.triple(v.z, v.y, v.z)])
 
-console.log(query)
+console.log(JSON.stringify(query))
 
 const world = 'world'
 
