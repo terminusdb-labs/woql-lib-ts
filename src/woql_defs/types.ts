@@ -4,16 +4,15 @@ export enum Graph {
 }
 
 export interface Uri {
-  uri: string
+  node: string
 }
 
 export interface Literal {
-  type: string
-  value: string | number | boolean
+  data: string | number | boolean
 }
 
 export interface Var {
-  name: string
+  variable: string
 }
 
 export type Value = Var | Uri | Literal
