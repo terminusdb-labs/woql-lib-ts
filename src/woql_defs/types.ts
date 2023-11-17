@@ -7,8 +7,14 @@ export interface Uri {
   node: string
 }
 
+enum LiteralType {
+  decimal = 'xsd:decimal',
+  string = 'xsd:string',
+}
+
 export interface Literal {
-  data: string | number | boolean
+  '@type': LiteralType
+  '@value': string | number | boolean | null
 }
 
 export interface Var {
