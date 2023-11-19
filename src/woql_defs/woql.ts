@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { type Graph, type Value, type Node } from './types.js'
+import {
+  type Graph,
+  type Value,
+  type Node,
+  type Column,
+  type Literal,
+} from './types.js'
 
 export interface Using {
   '@type': 'Using'
@@ -804,4 +810,4 @@ export type ArithmeticExpression =
   | Div
   | Exp
   | Floor
-  | number
+  | Literal

@@ -3,6 +3,45 @@ import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import * as prettier from 'prettier'
 
+const dir = dirname(fileURLToPath(import.meta.url))
+const schemaList: object[] = JSON.parse(
+  await readFile(dir + '/woql_list.json', 'utf8'),
+)
+
+export interface WOQLDefinition {
+  name: string
+  group: string
+  funName: string
+  fields: string[]
+  types: string[]
+  args: string[]
+}
+
+export type WOQLSchema = { [K in string]: WOQLDefinition }
+export const woqlSchema: WOQLSchema = {}
+schemaList.forEach((obj: object) => {
+  if ('@metadata' in obj && '@inherits' in obj && '@id' in obj) {
+    const name = obj['@id'] as string
+    const group = obj['@inherits'] as string
+    const funName = renameFunction(name)
+    const metadata = obj['@metadata'] as { [K in string]: any }
+    const definitionRecord = metadata['https://terminusdb.com'] as {
+      [K in 'fields' | 'types']: string[]
+    }
+    const fields = definitionRecord.fields
+    const types = associatedTypes(definitionRecord.types)
+    const args = argsList(fields, types)
+    woqlSchema[name] = {
+      name,
+      group,
+      funName,
+      fields,
+      types,
+      args,
+    }
+  }
+})
+
 function listType(s: string): string | null {
   if (s.length > 5 && s.slice(0, 5) === 'list(') {
     return s.slice(5, s.length - 1)
@@ -108,39 +147,53 @@ function renderBody(name: string, fields: string[]): string {
   return `{ '@type': '${name}', ${inner} }`
 }
 
+function generateFunDef(
+  name: string,
+  funName: string,
+  fields: string[],
+  args: string[],
+): string {
+  const body = renderBody(name, fields)
+  const funArgs = args.join(', ')
+
+  return `
+export function ${funName}(${funArgs}): ${name} {
+  return ${body}
+}
+`
+}
+
+function generateTypeDef(name: string, args: string[]): string {
+  const types = args.join('\n  ')
+  return `
+  export interface ${name} {
+'@type': '${name}'
+  ${types}
+}
+`
+}
+
 function generateDefs(
-  jsonObject: any,
+  schema: WOQLSchema,
   cls: string,
   otherTypes: string[] = [],
 ): string {
   let defs = ''
   let clsTypeList: string[] = []
-  jsonObject.forEach((obj: any) => {
-    if (obj['@metadata'] !== undefined && obj['@inherits'] === cls) {
-      const name = obj['@id']
-      const metadata = obj['@metadata']
-      const definitionRecord = metadata['https://terminusdb.com']
-      const fields = definitionRecord.fields
-      const defTypes = associatedTypes(definitionRecord.types)
-      const funName = renameFunction(name)
-      const args = argsList(fields, defTypes)
-      const funArgs = args.join(', ')
-      const types = args.join('\n  ')
-      const body = renderBody(name, fields)
-      const fundef = `
-export interface ${name} {
-'@type': '${name}'
-  ${types}
-}
-
-export function ${funName}(${funArgs}) : ${name} {
-  return ${body}
-}
-`
-      defs += fundef
+  for (const obj of Object.values(schema)) {
+    if (obj.group === cls) {
+      const name = obj.name
+      const fields = obj.fields
+      const funName = obj.funName
+      const args = obj.args
+      const typeDef = generateTypeDef(name, args)
+      defs += typeDef
+      const funDef = generateFunDef(name, funName, fields, args)
+      defs += funDef
       clsTypeList.push(name)
     }
-  })
+  }
+
   clsTypeList = clsTypeList.concat(otherTypes)
   const queryType = `
 export type ${cls} = ${clsTypeList.join(' | ')}
@@ -150,24 +203,20 @@ export type ${cls} = ${clsTypeList.join(' | ')}
 }
 
 export async function generateWoql(): Promise<void> {
-  const dir = dirname(fileURLToPath(import.meta.url))
-  const data = await readFile(dir + '/woql_list.json', 'utf8')
-  const jsonObject = JSON.parse(data)
-
   let defs = `
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { type Graph, type Value, type Node } from './types.js'
+import { type Graph, type Value, type Node, type Column, type Literal } from './types.js'
 
 `
-  const queryDefs = generateDefs(jsonObject, 'Query')
+  const queryDefs = generateDefs(woqlSchema, 'Query')
   defs += queryDefs
 
-  const pathDefs = generateDefs(jsonObject, 'PathPattern')
+  const pathDefs = generateDefs(woqlSchema, 'PathPattern')
   defs += pathDefs
 
-  const arithmeticDefs = generateDefs(jsonObject, 'ArithmeticExpression', [
-    'number',
+  const arithmeticDefs = generateDefs(woqlSchema, 'ArithmeticExpression', [
+    'Literal',
   ])
 
   defs += arithmeticDefs
