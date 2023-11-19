@@ -4,7 +4,7 @@ import { dirname } from 'path'
 import * as prettier from 'prettier'
 
 function listType(s: string): string | null {
-  if (s.length > 5 && s.slice(0, 5) == 'list(') {
+  if (s.length > 5 && s.slice(0, 5) === 'list(') {
     return s.slice(5, s.length - 1)
   } else {
     return null
@@ -12,7 +12,7 @@ function listType(s: string): string | null {
 }
 
 export function optionType(s: string): string | null {
-  if (s.length > 9 && s.slice(0, 9) == 'optional(') {
+  if (s.length > 9 && s.slice(0, 9) === 'optional(') {
     return s.slice(9, s.length - 1)
   } else {
     return null
@@ -20,37 +20,39 @@ export function optionType(s: string): string | null {
 }
 
 function associatedType(ty: string): string {
-  let lt = listType(ty)
-  let ot = optionType(ty)
-  if (lt) {
-    let t = associatedType(lt)
+  const lt = listType(ty)
+  const ot = optionType(ty)
+  if (lt !== null) {
+    const t = associatedType(lt)
     return `${t}[]`
-  } else if (ot) {
-    let t = associatedType(ot)
+  } else if (ot !== null) {
+    const t = associatedType(ot)
     return `${t} | undefined`
-  } else if (ty == 'query') {
+  } else if (ty === 'query') {
     return `Query`
-  } else if (ty == 'graph') {
+  } else if (ty === 'graph') {
     return 'Graph'
-  } else if (ty == 'node') {
+  } else if (ty === 'column') {
+    return 'Column'
+  } else if (ty === 'node') {
     return 'Node'
-  } else if (ty == 'value') {
+  } else if (ty === 'value') {
     return 'Value'
-  } else if (ty == 'integer') {
+  } else if (ty === 'integer') {
     return 'number'
-  } else if (ty == 'boolean') {
+  } else if (ty === 'boolean') {
     return 'boolean'
-  } else if (ty == 'json') {
+  } else if (ty === 'json') {
     return 'any'
-  } else if (ty == 'resource') {
+  } else if (ty === 'resource') {
     return 'string'
-  } else if (ty == 'string') {
+  } else if (ty === 'string') {
     return 'string'
-  } else if (ty == 'float') {
+  } else if (ty === 'float') {
     return 'number'
-  } else if (ty == 'path') {
+  } else if (ty === 'path') {
     return 'PathPattern'
-  } else if (ty == 'arithmetic') {
+  } else if (ty === 'arithmetic') {
     return 'ArithmeticExpression'
   } else {
     return 'any'
@@ -73,10 +75,10 @@ function lowerCamelCase(inputString: string): string {
 }
 
 function renameFunction(inputString: string): string {
-  let newName = lowerCamelCase(inputString)
-  if (newName == 'eval') {
+  const newName = lowerCamelCase(inputString)
+  if (newName === 'eval') {
     return 'compute'
-  } else if (newName == 'true') {
+  } else if (newName === 'true') {
     return 'success'
   } else {
     return newName
@@ -84,22 +86,21 @@ function renameFunction(inputString: string): string {
 }
 
 function argsList(fields: string[], types: string[]): string[] {
-  let args = []
-  for (const i in fields) {
-    let name = fields[i]
-    let typ = types[i]
-    let res = typ.match(/(\S*)\s*\|\s*undefined/)
+  const args: string[] = []
+  fields.forEach((name: string, i: number) => {
+    const typ = types[i]
+    const res = typ.match(/(\S*)\s*\|\s*undefined/)
     if (res != null) {
       args.push(`${name}?: ${res[1]}`)
     } else {
       args.push(`${name}: ${typ}`)
     }
-  }
+  })
   return args
 }
 
 function renderBody(name: string, fields: string[]): string {
-  let inner = fields
+  const inner = fields
     .map((s: string): string => {
       return `${s}`
     })
@@ -114,19 +115,19 @@ function generateDefs(
 ): string {
   let defs = ''
   let clsTypeList: string[] = []
-  for (const i in jsonObject) {
-    if (jsonObject[i]['@metadata'] && jsonObject[i]['@inherits'] == cls) {
-      let name = jsonObject[i]['@id']
-      let metadata = jsonObject[i]['@metadata']
-      let definitionRecord = metadata['https://terminusdb.com']
-      let fields = definitionRecord['fields']
-      let defTypes = associatedTypes(definitionRecord['types'])
-      let funName = renameFunction(name)
-      let args = argsList(fields, defTypes)
-      let funArgs = args.join(', ')
-      let types = args.join('\n  ')
-      let body = renderBody(name, fields)
-      let fundef = `
+  jsonObject.forEach((obj: any) => {
+    if (obj['@metadata'] !== undefined && obj['@inherits'] === cls) {
+      const name = obj['@id']
+      const metadata = obj['@metadata']
+      const definitionRecord = metadata['https://terminusdb.com']
+      const fields = definitionRecord.fields
+      const defTypes = associatedTypes(definitionRecord.types)
+      const funName = renameFunction(name)
+      const args = argsList(fields, defTypes)
+      const funArgs = args.join(', ')
+      const types = args.join('\n  ')
+      const body = renderBody(name, fields)
+      const fundef = `
 export interface ${name} {
 '@type': '${name}'
   ${types}
@@ -140,9 +141,9 @@ export function ${funName}(${funArgs}) : ${name} {
       defs += fundef
       clsTypeList.push(name)
     }
-  }
+  })
   clsTypeList = clsTypeList.concat(otherTypes)
-  let queryType = `
+  const queryType = `
 export type ${cls} = ${clsTypeList.join(' | ')}
 `
   defs += queryType

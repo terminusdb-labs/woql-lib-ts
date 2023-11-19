@@ -57,14 +57,18 @@ export enum LiteralType {
 
 export interface Literal {
   '@type': LiteralType
-  '@value': string | number | boolean | nul
+  '@value': string | number | boolean | null
 }
 
 export function lit(
   value: any,
-  type?: LiteralType = LiteralType.string,
+  type: LiteralType = LiteralType.string,
 ): Literal {
   return { '@type': type, '@value': value }
+}
+
+export function uri(value: string): Uri {
+  return { node: value }
 }
 
 export interface Var {
@@ -82,4 +86,15 @@ export function Vars(...args: string[]): { [K in string]: Var } {
     varObj[argumentName] = { variable: argumentName }
   }
   return varObj
+}
+
+export interface Indicator {
+  index: number
+  name: string
+}
+
+export interface Column {
+  '@type': 'Column'
+  indicator: Indicator
+  type?: Literal
 }

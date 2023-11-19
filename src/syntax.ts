@@ -1,8 +1,8 @@
 // Convenience functions for defining ASTs in WOQL
-
-import { type Var } from './woql_defs/types.js'
 import * as W from './woql_defs/woql.js'
+import { type Var } from './woql_defs/types.js'
 export * from './woql_defs/woql.js'
+export * from './woql_defs/types.js'
 
 export function and(...args: W.Query[]): W.Query {
   return W.and(args)
