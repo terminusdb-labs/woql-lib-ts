@@ -137,7 +137,6 @@ export function ${funName}(${funArgs}) : ${name} {
   return ${body}
 }
 `
-      console.log(fundef)
       defs += fundef
       clsTypeList.push(name)
     }

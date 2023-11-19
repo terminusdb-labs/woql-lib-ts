@@ -241,13 +241,13 @@ export function deleteDocument(identifier: Node): DeleteDocument {
 
 export interface Get {
   '@type': 'Get'
-  columns: any[]
+  columns: Column[]
   resource: string
   has_header?: boolean
 }
 
 export function get(
-  columns: any[],
+  columns: Column[],
   resource: string,
   has_header?: boolean,
 ): Get {
