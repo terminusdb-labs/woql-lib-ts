@@ -77,6 +77,7 @@ export interface Var {
 
 export type Value = Var | Uri | Literal
 export type Node = Var | Uri
+export type WoqlNode = object
 
 export function Vars(...args: string[]): { [K in string]: Var } {
   const varObj: { [K in string]: Var } = {}

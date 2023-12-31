@@ -166,7 +166,7 @@ export function ${funName}(${funArgs}): ${name} {
 function generateTypeDef(name: string, args: string[]): string {
   const types = args.join('\n  ')
   return `
-  export interface ${name} {
+  export interface ${name} extends WoqlNode {
 '@type': '${name}'
   ${types}
 }
@@ -206,7 +206,7 @@ export async function generateWoql(): Promise<void> {
   let defs = `
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { type Graph, type Value, type Node, type Column, type Literal } from './types.js'
+import { type Graph, type Value, type Node, type Column, type Literal, type WoqlNode } from './types.js'
 
 `
   const queryDefs = generateDefs(woqlSchema, 'Query')
