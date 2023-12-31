@@ -1,0 +1,38 @@
+{
+  "@type": "And",
+  "and": [
+    {
+      "@type": "Triple",
+      "subject": {
+        "variable": "doc"
+      },
+      "predicate": {
+        "@type": "xsd:string",
+        "@value": "rdf:type"
+      },
+      "object": {
+        "variable": "type"
+      }
+    },
+    {
+      "@type": "Not",
+      "query": {
+        "@type": "Triple",
+        "subject": {
+          "variable": "type"
+        },
+        "predicate": {
+          "@type": "xsd:string",
+          "@value": "sys:subdocument"
+        },
+        "object": {
+          "variable": "unbound"
+        },
+        "graph": {
+          "@type": "xsd:string",
+          "@value": "schema"
+        }
+      }
+    }
+  ]
+}

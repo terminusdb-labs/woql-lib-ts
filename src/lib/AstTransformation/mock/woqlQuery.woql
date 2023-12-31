@@ -1,0 +1,6 @@
+(doc, type, unbound) => {
+  and(
+    triple(doc, "rdf:type", type),
+    not(quad(type, "sys:subdocument", unbound, "schema")),
+  )
+}
