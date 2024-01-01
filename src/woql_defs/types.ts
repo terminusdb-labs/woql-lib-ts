@@ -89,6 +89,7 @@ export function uri(value: string): Uri {
 }
 
 export interface Var {
+  '@type'?: 'NodeValue' | 'Value'
   variable: string
 }
 

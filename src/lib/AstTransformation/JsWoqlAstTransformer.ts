@@ -11,8 +11,8 @@ import type {
   Pattern,
   Literal as AcornLiteral,
 } from 'acorn'
-import type { Var, WoqlNode, Literal } from '../../syntax.js'
-import { Vars, lit } from '../../syntax.js'
+import type { Var, Literal, Query, Uri } from '../../syntax.js'
+import { Graph, lit } from '../../syntax.js'
 import { WOQL } from '../../index.js'
 
 function lowerCamelCase(inputString: string): string {
@@ -105,12 +105,71 @@ const supportedWoql = [
 
 const supportedWoqlFunctions = supportedWoql.map((woql) => renameFunction(woql))
 
+type WoqlElement = Query | Var | Literal
+
 export class AstJsWoqlTransformer {
-  transform(node: Node): WoqlNode {
-    return this.visitNode(node)
+  transform(node: Node): Query {
+    return this.visitNode(node) as Query
   }
 
-  private visitNode(node: Node): WoqlNode {
+  private visitNodeValue(node: Node): Var | Uri {
+    switch (node?.type) {
+      case 'Identifier': {
+        return this.visitIdentifier(node as Identifier, 'NodeValue')
+      }
+      case 'Literal': {
+        const valueNode = node as AcornLiteral
+        if (typeof valueNode?.value !== 'string')
+          throw new Error('NodeValue is not a string')
+        if (valueNode.value.startsWith('v:')) {
+          return {
+            '@type': 'NodeValue',
+            variable: valueNode.value,
+          }
+        }
+        return {
+          '@type': 'NodeValue',
+          node: valueNode.value,
+        }
+      }
+      default:
+        throw new Error(
+          `Unhandled value type: ${node?.type}, full node: ${JSON.stringify(
+            node,
+          )}`,
+        )
+    }
+  }
+
+  private visitValue(node: Node): Var | Literal {
+    switch (node?.type) {
+      case 'Identifier': {
+        return this.visitIdentifier(node as Identifier, 'NodeValue')
+      }
+
+      case 'Literal': {
+        const valueNode = node as AcornLiteral
+        if (typeof valueNode?.value !== 'string')
+          throw new Error('NodeValue is not a string')
+        if (valueNode.value.startsWith('v:')) {
+          return {
+            '@type': 'NodeValue',
+            variable: valueNode.value,
+          }
+        }
+        return this.visitLiteral(valueNode)
+      }
+
+      default:
+        throw new Error(
+          `Unhandled value type: ${node?.type}, full node: ${JSON.stringify(
+            node,
+          )}`,
+        )
+    }
+  }
+
+  private visitNode(node: Node): WoqlElement {
     switch (node?.type) {
       case 'Program': {
         const body = (node as Program)?.body
@@ -140,7 +199,7 @@ export class AstJsWoqlTransformer {
         return this.visitCallExpression(node as CallExpression)
       }
       case 'Identifier': {
-        return this.visitIdentifier(node as Identifier)
+        return this.visitIdentifier(node as Identifier, 'NodeValue')
       }
       case 'Literal': {
         return this.visitLiteral(node as AcornLiteral)
@@ -160,10 +219,13 @@ export class AstJsWoqlTransformer {
 
   private visitIdentifier(
     node: Identifier | Expression | Super | Pattern,
+    identifierType: 'NodeValue' | 'Value' | undefined,
   ): Var {
     if (node.type === 'Identifier') {
-      const variables = Vars(node.name)
-      return variables[node.name]
+      return {
+        '@type': identifierType,
+        variable: node.name,
+      }
     } else {
       throw new Error(`Unhandled node type: ${node?.type}`)
     }
@@ -171,26 +233,50 @@ export class AstJsWoqlTransformer {
 
   private visitLiteral(node: AcornLiteral): Literal {
     try {
-      return lit(JSON.parse(node.raw ?? '') ?? node.value)
+      const value = JSON.parse(node.raw ?? '') ?? node.value
+      return lit(value)
     } catch (e) {
       throw new Error(`Unhandled literal value: ${node?.value}`)
     }
   }
 
-  private visitCallExpression(node: CallExpression): WoqlNode {
-    const callIdentifier = this.visitIdentifier(node.callee)
+  private visitCallExpression(node: CallExpression): Query {
+    const callIdentifier = this.visitIdentifier(node.callee, undefined)
     const callee = callIdentifier?.variable
 
-    const args = node.arguments.map((arg) => this.visitNode(arg))
     if (
       typeof callee === 'string' &&
       callee !== '' &&
       supportedWoqlFunctions.includes(callee)
     ) {
-      // Here we limit what functions can be called from the library to the allowed terms
-      // It must not be allowed to call any function, but restricted to only functions.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (WOQL[callee as keyof typeof WOQL] as any)(...args)
+      switch (callee) {
+        case 'triple': {
+          return WOQL.triple(
+            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) },
+            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[1]) },
+            { '@type': 'Value', ...this.visitValue(node.arguments[2]) },
+          )
+        }
+        case 'quad': {
+          return WOQL.quad(
+            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) },
+            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[1]) },
+            { '@type': 'Value', ...this.visitValue(node.arguments[2]) },
+            (this.visitLiteral(node.arguments[3] as AcornLiteral)['@value'] ===
+            'instance'
+              ? Graph.instance
+              : Graph.schema) ?? undefined,
+          )
+        }
+        default: {
+          // Here we limit what functions can be called from the library to the allowed terms
+          // It must not be allowed to call any function, but restricted to only functions.
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (WOQL[callee as keyof typeof WOQL] as any)(
+            ...node.arguments.map((arg) => this.visitNode(arg)),
+          )
+        }
+      }
     } else {
       throw new Error(`Unsupported function: ${callee}`)
     }
@@ -200,10 +286,10 @@ export class AstJsWoqlTransformer {
 
   private visitArrowFunctionExpression(
     node: ArrowFunctionExpression,
-  ): WoqlNode {
+  ): WoqlElement {
     const params = Array.isArray(node.params) ? node.params : [node.params]
     const variables = params.map(
-      (identifer) => this.visitIdentifier(identifer)?.variable,
+      (identifer) => this.visitIdentifier(identifer, undefined)?.variable,
     )
     this.registeredVariableNames.push(...variables)
     return this.visitNode(node.body)
