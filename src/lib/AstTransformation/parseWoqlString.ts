@@ -2,6 +2,7 @@ import { AstJsWoqlTransformer } from '../AstTransformation/JsWoqlAstTransformer.
 import { parse } from 'acorn'
 import type { Program } from 'acorn'
 import type { Query } from '../../syntax.js'
+import escodegen from 'escodegen'
 
 const parseWoqlStringToJsAst = (code: string): Program | undefined => {
   const ast = parse(code, {
@@ -11,6 +12,9 @@ const parseWoqlStringToJsAst = (code: string): Program | undefined => {
   return ast
 }
 
+export const generateWoqlStringFromJsAst = (ast: Program): string => {
+  return escodegen.generate(ast)
+}
 export const parseWoqlString = (woql: string): Query => {
   const ast = parseWoqlStringToJsAst(woql)
   if (ast === undefined) {
