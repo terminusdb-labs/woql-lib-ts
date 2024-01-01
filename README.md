@@ -25,6 +25,21 @@ After which you can build the new `woql.ts` file by running
 $ npx src/generate.ts
 ```
 
+## Usage example
+
+The WOQL below query identifies document identifiers that are not subdocuments.
+
+```javascript
+const woqlStr = `
+and(triple(doc, "rdf:type", type),
+  not(quad(type, "sys:subdocument", unbound, "schema")),
+)
+`
+const woql = parseWoqlString(woqlStr);
+const postBody = prepareWoqlHttpPostBody(woql);
+const result = await terminusClient.sendCustomRequest("POST", `http://localhost:6363/api/woql/admin/sandbox/local/branch/main`, postBody);
+```
+
 
 ## Syntax options for variables
 
@@ -45,15 +60,16 @@ The WOQL DSL parser and WOQL transformer supports new WOQL authoring styles. Var
 ```
 
 ```javascript
-  and(
-    triple(doc, "rdf:type", type),
-    not(quad(type, "sys:subdocument", unbound, "schema")),
-  )
+and(
+  triple(doc, "rdf:type", type),
+  not(quad(type, "sys:subdocument", unbound, "schema")),
+)
 ```
 
 ```javascript
-  and(
-    triple("v:doc", "rdf:type", "v:type"),
-    not(quad("v:type", "sys:subdocument", "v:unbound", "schema")),
-  )
+and(
+  triple("v:doc", "rdf:type", "v:type"),
+  not(quad("v:type", "sys:subdocument", "v:unbound", "schema")),
+)
 ```
+
