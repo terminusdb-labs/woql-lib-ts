@@ -67,7 +67,7 @@ export function lit(
   return { '@type': type, '@value': value }
 }
 
-export interface Quad extends WoqlNode {
+export interface Quad {
   '@type': 'Triple'
   subject: Node
   predicate: Node
@@ -94,7 +94,6 @@ export interface Var {
 
 export type Value = Var | Uri | Literal
 export type Node = Var | Uri
-export type WoqlNode = object
 
 export function Vars(...args: string[]): { [K in string]: Var } {
   const varObj: { [K in string]: Var } = {}

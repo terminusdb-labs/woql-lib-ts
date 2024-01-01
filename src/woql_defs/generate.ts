@@ -166,7 +166,7 @@ export function ${funName}(${funArgs}): ${name} {
 function generateTypeDef(name: string, args: string[]): string {
   const types = args.join('\n  ')
   return `
-  export interface ${name} extends WoqlNode {
+  export interface ${name} {
 '@type': '${name}'
   ${types}
 }
