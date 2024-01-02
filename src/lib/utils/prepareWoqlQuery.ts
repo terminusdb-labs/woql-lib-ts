@@ -9,7 +9,7 @@ interface WoqlQueryOptions {
   allWitnesses?: boolean
 }
 
-export function prepareWoqlQuery(
+export function embedWoqlQuery(
   woql: Query,
   options?: WoqlQueryOptions,
 ): WOQLQuery {
@@ -47,7 +47,7 @@ export const prepareWoqlHttpPostBody = (
   woql: Query,
   options?: WoqlHttpPostBodyOptions,
 ): WOQLQuery | FormData => {
-  const woqlQuery = prepareWoqlQuery(woql, {
+  const woqlQuery = embedWoqlQuery(woql, {
     allWitnesses: options?.allWitnesses,
   })
 

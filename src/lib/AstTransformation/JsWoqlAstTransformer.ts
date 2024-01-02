@@ -239,9 +239,9 @@ export class AstJsWoqlTransformer {
         this.currentCallExpression !== '' &&
         this.literalExceptions.includes(this.currentCallExpression)
       ) {
-        return lit(value)
-      } else {
         return value
+      } else {
+        return lit(value)
       }
     } catch (e) {
       throw new Error(`Unhandled literal value: ${node?.value}`)

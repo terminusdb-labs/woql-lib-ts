@@ -1,4 +1,4 @@
-export function prepareWoqlQuery(woql, options) {
+export function embedWoqlQuery(woql, options) {
     var _a;
     return {
         query: woql,
@@ -6,7 +6,7 @@ export function prepareWoqlQuery(woql, options) {
     };
 }
 export const prepareWoqlHttpPostBody = (woql, options) => {
-    const woqlQuery = prepareWoqlQuery(woql, {
+    const woqlQuery = embedWoqlQuery(woql, {
         allWitnesses: options === null || options === void 0 ? void 0 : options.allWitnesses,
     });
     const resourceObjects = getResourceObjects(woqlQuery.query);

@@ -15,6 +15,7 @@ const parseWoqlStringToJsAst = (code: string): Program | undefined => {
 export const generateWoqlStringFromJsAst = (ast: Program): string => {
   return escodegen.generate(ast)
 }
+
 export const parseWoqlString = (woql: string): Query => {
   const ast = parseWoqlStringToJsAst(woql)
   if (ast === undefined) {

@@ -197,10 +197,10 @@ export class AstJsWoqlTransformer {
             if (typeof this.currentCallExpression === 'string' &&
                 this.currentCallExpression !== '' &&
                 this.literalExceptions.includes(this.currentCallExpression)) {
-                return lit(value);
+                return value;
             }
             else {
-                return value;
+                return lit(value);
             }
         }
         catch (e) {

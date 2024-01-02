@@ -7,7 +7,7 @@ interface WOQLQuery {
 interface WoqlQueryOptions {
     allWitnesses?: boolean;
 }
-export declare function prepareWoqlQuery(woql: Query, options?: WoqlQueryOptions): WOQLQuery;
+export declare function embedWoqlQuery(woql: Query, options?: WoqlQueryOptions): WOQLQuery;
 interface WoqlFileAttachments {
     [filename: string]: string;
 }
