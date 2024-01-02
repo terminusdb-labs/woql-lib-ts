@@ -88,6 +88,8 @@ const supportedWoql = [
 const supportedWoqlFunctions = supportedWoql.map((woql) => renameFunction(woql));
 export class AstJsWoqlTransformer {
     constructor() {
+        this.literalExceptions = ['limit'];
+        this.currentCallExpression = undefined;
         this.registeredVariableNames = [];
     }
     transform(node) {
@@ -192,7 +194,14 @@ export class AstJsWoqlTransformer {
         var _a, _b;
         try {
             const value = (_b = JSON.parse((_a = node.raw) !== null && _a !== void 0 ? _a : '')) !== null && _b !== void 0 ? _b : node.value;
-            return lit(value);
+            if (typeof this.currentCallExpression === 'string' &&
+                this.currentCallExpression !== '' &&
+                this.literalExceptions.includes(this.currentCallExpression)) {
+                return lit(value);
+            }
+            else {
+                return value;
+            }
         }
         catch (e) {
             throw new Error(`Unhandled literal value: ${node === null || node === void 0 ? void 0 : node.value}`);
@@ -202,6 +211,7 @@ export class AstJsWoqlTransformer {
         var _a;
         const callIdentifier = this.visitIdentifier(node.callee, undefined);
         const callee = callIdentifier === null || callIdentifier === void 0 ? void 0 : callIdentifier.variable;
+        this.currentCallExpression = callee;
         if (typeof callee === 'string' &&
             callee !== '' &&
             supportedWoqlFunctions.includes(callee)) {

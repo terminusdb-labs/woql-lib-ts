@@ -234,15 +234,27 @@ export class AstJsWoqlTransformer {
   private visitLiteral(node: AcornLiteral): Literal {
     try {
       const value = JSON.parse(node.raw ?? '') ?? node.value
-      return lit(value)
+      if (
+        typeof this.currentCallExpression === 'string' &&
+        this.currentCallExpression !== '' &&
+        this.literalExceptions.includes(this.currentCallExpression)
+      ) {
+        return lit(value)
+      } else {
+        return value
+      }
     } catch (e) {
       throw new Error(`Unhandled literal value: ${node?.value}`)
     }
   }
 
+  private readonly literalExceptions = ['limit']
+  private currentCallExpression: string | undefined = undefined
+
   private visitCallExpression(node: CallExpression): Query {
     const callIdentifier = this.visitIdentifier(node.callee, undefined)
     const callee = callIdentifier?.variable
+    this.currentCallExpression = callee
 
     if (
       typeof callee === 'string' &&

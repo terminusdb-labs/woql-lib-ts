@@ -1,3 +1,10 @@
+import * as W from './woql.js';
+export function and(...args) {
+    return W.and(args);
+}
+export function or(...args) {
+    return W.or(args);
+}
 export function letvars(fn) {
     var _a;
     const func = fn.toString();
@@ -9,4 +16,4 @@ export function letvars(fn) {
     });
     return fn(...vs);
 }
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=extra_signatures.js.map

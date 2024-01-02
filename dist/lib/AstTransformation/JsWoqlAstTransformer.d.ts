@@ -7,6 +7,8 @@ export declare class AstJsWoqlTransformer {
     private visitNode;
     private visitIdentifier;
     private visitLiteral;
+    private readonly literalExceptions;
+    private currentCallExpression;
     private visitCallExpression;
     private readonly registeredVariableNames;
     private visitArrowFunctionExpression;
