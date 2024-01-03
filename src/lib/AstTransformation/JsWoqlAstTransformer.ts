@@ -144,7 +144,7 @@ export class AstJsWoqlTransformer {
   private visitValue(node: Node): Var | Literal {
     switch (node?.type) {
       case 'Identifier': {
-        return this.visitIdentifier(node as Identifier, 'NodeValue')
+        return this.visitIdentifier(node as Identifier, 'Value')
       }
 
       case 'Literal': {
@@ -153,7 +153,7 @@ export class AstJsWoqlTransformer {
           throw new Error('NodeValue is not a string')
         if (valueNode.value.startsWith('v:')) {
           return {
-            '@type': 'NodeValue',
+            '@type': 'Value',
             variable: valueNode.value,
           }
         }
@@ -239,16 +239,16 @@ export class AstJsWoqlTransformer {
         this.currentCallExpression !== '' &&
         this.literalExceptions.includes(this.currentCallExpression)
       ) {
-        return value
-      } else {
         return lit(value)
+      } else {
+        return value
       }
     } catch (e) {
       throw new Error(`Unhandled literal value: ${node?.value}`)
     }
   }
 
-  private readonly literalExceptions = ['limit']
+  private readonly literalExceptions = ['triple', 'quad']
   private currentCallExpression: string | undefined = undefined
 
   private visitCallExpression(node: CallExpression): Query {
@@ -262,6 +262,15 @@ export class AstJsWoqlTransformer {
       supportedWoqlFunctions.includes(callee)
     ) {
       switch (callee) {
+        case 'select': {
+          const woql = this.visitNode(node.arguments[node.arguments.length - 1])
+          node.arguments.pop()
+          const identifiers = node.arguments.map(
+            (arg) =>
+              this.visitIdentifier(arg as AcornLiteral, 'NodeValue').variable,
+          )
+          return WOQL.select(identifiers, woql as Query)
+        }
         case 'triple': {
           return WOQL.triple(
             { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) },

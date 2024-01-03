@@ -32,16 +32,20 @@
     "woqlget": "wget \"https://raw.githubusercontent.com/terminusdb/terminusdb/main/src/terminus-schema/woql.json\" -O src/woql_defs/woql.json && cat src/woql_defs/woql.json | jq -s '.' > src/woql_defs/woql_list.json",
     "build": "tsc",
     "clean": "rm -rf ./dist",
+    "test": "mocha",
     "dev": "tsc -w",
     "lint": "eslint . --ext ts"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
+    "@types/chai": "^4.3.11",
     "@types/escodegen": "^0.0.10",
+    "@types/mocha": "^10.0.6",
     "@types/moo": "^0.5.9",
     "@types/mustache": "^4.2.5",
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "chai": "^5.0.0",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^39.1.0",
@@ -49,7 +53,9 @@
     "eslint-plugin-n": "^16.1.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.2.0",
     "prettier": "^3.0.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   },
   "dependencies": {
