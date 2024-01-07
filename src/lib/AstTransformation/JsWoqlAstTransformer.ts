@@ -37,19 +37,19 @@ function renameFunction(inputString: string): string {
 
 const supportedWoql = [
   'Using',
-  'Select',
+  'Select', // hastest
   'Distinct',
-  'And',
-  'Or',
+  'And', // hastest
+  'Or', // hastest
   'From',
   'Into',
-  'Triple',
+  'Triple', // hastest
   'AddTriple',
   'AddedTriple',
   'DeleteTriple',
   'DeletedTriple',
   'Subsumption',
-  'Equals',
+  'Equals', // hastest (failing)
   'Substring',
   'ReadDocument',
   'UpdateDocument',

@@ -1,4 +1,6 @@
-const textWoql = `
+import { Graph, type Query } from '../../../syntax.js'
+
+const textWoql: string = `
 (doc, type, unbound) => {
   and(
     triple(doc, "rdf:type", type),
@@ -7,7 +9,7 @@ const textWoql = `
 }
 `
 
-const woqlAst = {
+const woqlAst: Query = {
   '@type': 'And',
   and: [
     {
@@ -42,13 +44,13 @@ const woqlAst = {
           '@type': 'Value',
           variable: 'unbound',
         },
-        graph: 'schema',
+        graph: Graph.schema,
       },
     },
   ],
 }
 
 export default {
-  text: textWoql,
+  textWoql,
   woqlAst,
 }

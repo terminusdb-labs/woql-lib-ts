@@ -88,7 +88,7 @@ const supportedWoql = [
 const supportedWoqlFunctions = supportedWoql.map((woql) => renameFunction(woql));
 export class AstJsWoqlTransformer {
     constructor() {
-        this.literalExceptions = ['limit'];
+        this.literalExceptions = ['triple', 'quad'];
         this.currentCallExpression = undefined;
         this.registeredVariableNames = [];
     }
@@ -122,7 +122,7 @@ export class AstJsWoqlTransformer {
     visitValue(node) {
         switch (node === null || node === void 0 ? void 0 : node.type) {
             case 'Identifier': {
-                return this.visitIdentifier(node, 'NodeValue');
+                return this.visitIdentifier(node, 'Value');
             }
             case 'Literal': {
                 const valueNode = node;
@@ -130,7 +130,7 @@ export class AstJsWoqlTransformer {
                     throw new Error('NodeValue is not a string');
                 if (valueNode.value.startsWith('v:')) {
                     return {
-                        '@type': 'NodeValue',
+                        '@type': 'Value',
                         variable: valueNode.value,
                     };
                 }
@@ -197,10 +197,10 @@ export class AstJsWoqlTransformer {
             if (typeof this.currentCallExpression === 'string' &&
                 this.currentCallExpression !== '' &&
                 this.literalExceptions.includes(this.currentCallExpression)) {
-                return value;
+                return lit(value);
             }
             else {
-                return lit(value);
+                return value;
             }
         }
         catch (e) {
@@ -216,6 +216,12 @@ export class AstJsWoqlTransformer {
             callee !== '' &&
             supportedWoqlFunctions.includes(callee)) {
             switch (callee) {
+                case 'select': {
+                    const woql = this.visitNode(node.arguments[node.arguments.length - 1]);
+                    node.arguments.pop();
+                    const identifiers = node.arguments.map((arg) => this.visitIdentifier(arg, 'NodeValue').variable);
+                    return WOQL.select(identifiers, woql);
+                }
                 case 'triple': {
                     return WOQL.triple({ '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) }, { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[1]) }, { '@type': 'Value', ...this.visitValue(node.arguments[2]) });
                 }
