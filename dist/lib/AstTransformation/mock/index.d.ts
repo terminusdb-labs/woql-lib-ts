@@ -1,2 +1,2 @@
-import * as mock from './allMocks.js';
+import * as mock from './_allMocks.js';
 export default mock;

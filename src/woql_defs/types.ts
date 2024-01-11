@@ -4,6 +4,7 @@ export enum Graph {
 }
 
 export interface Uri {
+  '@type'?: 'NodeValue' | 'Value'
   node: string
 }
 

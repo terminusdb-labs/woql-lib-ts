@@ -2,20 +2,6 @@ const mock = [
     {
         textWoql: `
 (doc, type) => {
-    triple(doc,"rdf:type",type)
-}
-`,
-        woqlAst: {
-            '@type': 'Triple',
-            subject: { '@type': 'NodeValue', variable: 'doc' },
-            predicate: { '@type': 'NodeValue', node: 'rdf:type' },
-            object: { '@type': 'Value', variable: 'type' },
-            graph: undefined,
-        },
-    },
-    {
-        textWoql: `
-(doc, type) => {
     triple("v:doc","rdf:type","@schema:MyType")
 }
 `,
@@ -29,4 +15,4 @@ const mock = [
     },
 ];
 export default mock;
-//# sourceMappingURL=triple.woql.js.map
+//# sourceMappingURL=tripleVariable.woql.js.map

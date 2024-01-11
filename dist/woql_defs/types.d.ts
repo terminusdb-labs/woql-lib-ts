@@ -3,6 +3,7 @@ export declare enum Graph {
     schema = "schema"
 }
 export interface Uri {
+    '@type'?: 'NodeValue' | 'Value';
     node: string;
 }
 export declare enum LiteralType {

@@ -95,46 +95,25 @@ export class AstJsWoqlTransformer {
     transform(node) {
         return this.visitNode(node);
     }
-    visitNodeValue(node) {
+    visitNodeValue(node, nodeType) {
         switch (node === null || node === void 0 ? void 0 : node.type) {
             case 'Identifier': {
-                return this.visitIdentifier(node, 'NodeValue');
+                return this.visitIdentifier(node, nodeType);
             }
             case 'Literal': {
                 const valueNode = node;
                 if (typeof (valueNode === null || valueNode === void 0 ? void 0 : valueNode.value) !== 'string')
-                    throw new Error('NodeValue is not a string');
+                    throw new Error(`${nodeType} is not a string`);
                 if (valueNode.value.startsWith('v:')) {
                     return {
-                        '@type': 'NodeValue',
-                        variable: valueNode.value,
+                        '@type': nodeType,
+                        variable: valueNode.value.substring(2),
                     };
                 }
                 return {
-                    '@type': 'NodeValue',
+                    '@type': nodeType,
                     node: valueNode.value,
                 };
-            }
-            default:
-                throw new Error(`Unhandled value type: ${node === null || node === void 0 ? void 0 : node.type}, full node: ${JSON.stringify(node)}`);
-        }
-    }
-    visitValue(node) {
-        switch (node === null || node === void 0 ? void 0 : node.type) {
-            case 'Identifier': {
-                return this.visitIdentifier(node, 'Value');
-            }
-            case 'Literal': {
-                const valueNode = node;
-                if (typeof (valueNode === null || valueNode === void 0 ? void 0 : valueNode.value) !== 'string')
-                    throw new Error('NodeValue is not a string');
-                if (valueNode.value.startsWith('v:')) {
-                    return {
-                        '@type': 'Value',
-                        variable: valueNode.value,
-                    };
-                }
-                return this.visitLiteral(valueNode);
             }
             default:
                 throw new Error(`Unhandled value type: ${node === null || node === void 0 ? void 0 : node.type}, full node: ${JSON.stringify(node)}`);
@@ -216,20 +195,35 @@ export class AstJsWoqlTransformer {
             callee !== '' &&
             supportedWoqlFunctions.includes(callee)) {
             switch (callee) {
-                case 'select': {
-                    const woql = this.visitNode(node.arguments[node.arguments.length - 1]);
-                    node.arguments.pop();
+                case 'select':
+                case 'distinct': {
+                    const lastArg = node.arguments.pop();
+                    if (lastArg === null || lastArg === undefined) {
+                        throw new Error(`${callee} requires at least one argument`);
+                    }
+                    const woql = this.visitNode(lastArg);
                     const identifiers = node.arguments.map((arg) => this.visitIdentifier(arg, 'NodeValue').variable);
-                    return WOQL.select(identifiers, woql);
+                    if (callee === 'select') {
+                        return WOQL.select(identifiers, woql);
+                    }
+                    else if (callee === 'distinct') {
+                        return WOQL.distinct(identifiers, woql);
+                    }
+                    else {
+                        throw new Error(`Unhandled ${callee}`);
+                    }
                 }
                 case 'triple': {
-                    return WOQL.triple({ '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) }, { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[1]) }, { '@type': 'Value', ...this.visitValue(node.arguments[2]) });
+                    return WOQL.triple(this.visitNodeValue(node.arguments[0], 'NodeValue'), this.visitNodeValue(node.arguments[1], 'NodeValue'), this.visitNodeValue(node.arguments[2], 'Value'));
                 }
                 case 'quad': {
-                    return WOQL.quad({ '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) }, { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[1]) }, { '@type': 'Value', ...this.visitValue(node.arguments[2]) }, (_a = (this.visitLiteral(node.arguments[3])['@value'] ===
+                    return WOQL.quad(this.visitNodeValue(node.arguments[0], 'NodeValue'), this.visitNodeValue(node.arguments[1], 'NodeValue'), this.visitNodeValue(node.arguments[2], 'Value'), (_a = (this.visitLiteral(node.arguments[3])['@value'] ===
                         'instance'
                         ? Graph.instance
                         : Graph.schema)) !== null && _a !== void 0 ? _a : undefined);
+                }
+                case 'equals': {
+                    return WOQL.equals(this.visitNodeValue(node.arguments[0], 'Value'), this.visitNodeValue(node.arguments[1], 'Value'));
                 }
                 default: {
                     // Here we limit what functions can be called from the library to the allowed terms

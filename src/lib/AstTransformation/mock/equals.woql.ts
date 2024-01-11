@@ -10,12 +10,12 @@ const mock: MockData[] = [
     woqlAst: {
       '@type': 'Equals',
       left: {
-        '@type': 'Variable',
-        name: 'doc',
+        '@type': 'Value',
+        variable: 'doc',
       },
       right: {
         '@type': 'Value',
-        value: 'rdf:type',
+        node: 'rdf:type',
       },
     },
   },

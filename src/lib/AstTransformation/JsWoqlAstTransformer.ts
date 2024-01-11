@@ -112,54 +112,29 @@ export class AstJsWoqlTransformer {
     return this.visitNode(node) as Query
   }
 
-  private visitNodeValue(node: Node): Var | Uri {
+  private visitNodeValue(
+    node: Node,
+    nodeType: 'NodeValue' | 'Value',
+  ): Var | Uri {
     switch (node?.type) {
       case 'Identifier': {
-        return this.visitIdentifier(node as Identifier, 'NodeValue')
+        return this.visitIdentifier(node as Identifier, nodeType)
       }
       case 'Literal': {
         const valueNode = node as AcornLiteral
         if (typeof valueNode?.value !== 'string')
-          throw new Error('NodeValue is not a string')
+          throw new Error(`${nodeType} is not a string`)
         if (valueNode.value.startsWith('v:')) {
           return {
-            '@type': 'NodeValue',
-            variable: valueNode.value,
+            '@type': nodeType,
+            variable: valueNode.value.substring(2),
           }
         }
         return {
-          '@type': 'NodeValue',
+          '@type': nodeType,
           node: valueNode.value,
         }
       }
-      default:
-        throw new Error(
-          `Unhandled value type: ${node?.type}, full node: ${JSON.stringify(
-            node,
-          )}`,
-        )
-    }
-  }
-
-  private visitValue(node: Node): Var | Literal {
-    switch (node?.type) {
-      case 'Identifier': {
-        return this.visitIdentifier(node as Identifier, 'Value')
-      }
-
-      case 'Literal': {
-        const valueNode = node as AcornLiteral
-        if (typeof valueNode?.value !== 'string')
-          throw new Error('NodeValue is not a string')
-        if (valueNode.value.startsWith('v:')) {
-          return {
-            '@type': 'Value',
-            variable: valueNode.value,
-          }
-        }
-        return this.visitLiteral(valueNode)
-      }
-
       default:
         throw new Error(
           `Unhandled value type: ${node?.type}, full node: ${JSON.stringify(
@@ -262,31 +237,47 @@ export class AstJsWoqlTransformer {
       supportedWoqlFunctions.includes(callee)
     ) {
       switch (callee) {
-        case 'select': {
-          const woql = this.visitNode(node.arguments[node.arguments.length - 1])
-          node.arguments.pop()
+        case 'select':
+        case 'distinct': {
+          const lastArg = node.arguments.pop()
+          if (lastArg === null || lastArg === undefined) {
+            throw new Error(`${callee} requires at least one argument`)
+          }
+          const woql = this.visitNode(lastArg)
           const identifiers = node.arguments.map(
             (arg) =>
               this.visitIdentifier(arg as AcornLiteral, 'NodeValue').variable,
           )
-          return WOQL.select(identifiers, woql as Query)
+          if (callee === 'select') {
+            return WOQL.select(identifiers, woql as Query)
+          } else if (callee === 'distinct') {
+            return WOQL.distinct(identifiers, woql as Query)
+          } else {
+            throw new Error(`Unhandled ${callee as string}`)
+          }
         }
         case 'triple': {
           return WOQL.triple(
-            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) },
-            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[1]) },
-            { '@type': 'Value', ...this.visitValue(node.arguments[2]) },
+            this.visitNodeValue(node.arguments[0], 'NodeValue'),
+            this.visitNodeValue(node.arguments[1], 'NodeValue'),
+            this.visitNodeValue(node.arguments[2], 'Value'),
           )
         }
         case 'quad': {
           return WOQL.quad(
-            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[0]) },
-            { '@type': 'NodeValue', ...this.visitNodeValue(node.arguments[1]) },
-            { '@type': 'Value', ...this.visitValue(node.arguments[2]) },
+            this.visitNodeValue(node.arguments[0], 'NodeValue'),
+            this.visitNodeValue(node.arguments[1], 'NodeValue'),
+            this.visitNodeValue(node.arguments[2], 'Value'),
             (this.visitLiteral(node.arguments[3] as AcornLiteral)['@value'] ===
             'instance'
               ? Graph.instance
               : Graph.schema) ?? undefined,
+          )
+        }
+        case 'equals': {
+          return WOQL.equals(
+            this.visitNodeValue(node.arguments[0], 'Value'),
+            this.visitNodeValue(node.arguments[1], 'Value'),
           )
         }
         default: {

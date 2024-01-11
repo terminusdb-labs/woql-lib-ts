@@ -3,7 +3,6 @@ import type { Query } from '../../syntax.js';
 export declare class AstJsWoqlTransformer {
     transform(node: Node): Query;
     private visitNodeValue;
-    private visitValue;
     private visitNode;
     private visitIdentifier;
     private visitLiteral;
