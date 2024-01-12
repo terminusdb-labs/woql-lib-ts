@@ -52,6 +52,7 @@ jobs:
         with:
           node-version: '20.x'
           registry-url: 'https://npm.pkg.github.com'
+          scope: '@hoijnet'
       # - run: npx bun install
       - run: npm ci
       - run: npm publish
