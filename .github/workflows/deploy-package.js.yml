@@ -55,7 +55,7 @@ jobs:
       # - run: npx bun install
       - name: Install dependencies
         run: |
-          sed -i bak 's/@terminusdb\/woql/@dfrnt-com\/woql-lib-ts/' package.json
+          sed -i 's/@terminusdb\/woql/@dfrnt-com\/woql-lib-ts/' package.json
       - name: Install dependencies
         run: |
           echo "//npm.pkg.github.com/:_authToken=$NODE_AUTH_TOKEN" > ~/.npmrc
