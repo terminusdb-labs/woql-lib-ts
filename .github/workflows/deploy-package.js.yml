@@ -1,0 +1,56 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Build package
+
+on:
+  push:
+    branches: [ "main", "contrib" ]
+    paths: [ "src/**", ".github/workflows/deploy-package.js.yml" ]
+  # pull_request:
+  #   branches: [ "prod" ]
+  #   paths: [ "infra/terminusdb/**" ]
+  #   types:
+  #     - closed
+  # schedule:
+  #   - cron: "28 7 * * 0"
+  workflow_dispatch:
+
+jobs:
+  build:
+        
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - run: npx bun install
+      - run: npx bun test
+      - run: npm audit --production
+
+      - name: Update all production proxies
+        run: npm run build
+        env:
+          PKG_CACHE_PATH: cache-pkg-packages
+
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+      - run: npx bun install
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
