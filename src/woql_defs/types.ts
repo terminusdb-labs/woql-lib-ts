@@ -4,6 +4,7 @@ export enum Graph {
 }
 
 export interface Uri {
+  '@type'?: 'NodeValue' | 'Value'
   node: string
 }
 
@@ -67,11 +68,29 @@ export function lit(
   return { '@type': type, '@value': value }
 }
 
+export interface Quad {
+  '@type': 'Triple'
+  subject: Node
+  predicate: Node
+  object: Value
+  graph?: Graph
+}
+
+export function quad(
+  subject: Node,
+  predicate: Node,
+  object: Value,
+  graph?: Graph,
+): Quad {
+  return { '@type': 'Triple', subject, predicate, object, graph }
+}
+
 export function uri(value: string): Uri {
   return { node: value }
 }
 
 export interface Var {
+  '@type'?: 'NodeValue' | 'Value'
   variable: string
 }
 

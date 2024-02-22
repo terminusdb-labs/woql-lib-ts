@@ -1,12 +1,12 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
   "baseUrl": "./",
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "compilerOptions": {
     "outDir": "dist",
     "sourceMap": true,
-    "module" : "node16"
+    "declaration": true,
+    "target": "ES2019",
+    "module": "Node16"
   }
 }
