@@ -16,7 +16,7 @@ For development you will need to get the latest `woql.json` from the
 terminusdb repository. Assuming you have wget installed, you can run:
 
 ```
-$ npm run woql-get
+$ npm run woqlget
 ```
 
 After which you can build the new `woql.ts` file by running
